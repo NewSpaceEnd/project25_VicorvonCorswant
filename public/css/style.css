@@ -1,0 +1,15 @@
+img {
+    height: 500px;
+    width: 500px;
+}
+
+nav {
+    display:flex;
+    justify-content: space-around;
+    align-items:center;
+    font-size:x-large   
+}   
+
+li {
+    font-size: x-large;
+}

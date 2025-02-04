@@ -1,0 +1,22 @@
+ol 
+    - @cars.each do |cars|
+        li 
+            ul 
+                li
+                    = "Name - #{cars["name"]}"
+                li
+                    = "Manufacturer - #{cars["manufacturer"]}"
+                li 
+                    = "Production Year - #{cars["production_year"]}"
+                li 
+                    = "Mileage - #{cars["mileage"]} miles"
+                li 
+                    = "Class - #{cars["class"]}"
+                li 
+                    img src="img/#{cars["img"]}" alt="Bild på bil"/
+                li 
+                    = "Price TBA"
+                li 
+                    form action="purchase" method="post"
+                        input type="hidden" name="id" value="#{cars["id"]}"
+                        input type="submit" value="Purchase"
