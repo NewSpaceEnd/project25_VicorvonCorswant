@@ -1,3 +1,6 @@
+- @user.each do |user|
+    li = "You have #{user["money"]} SEK"
+
 ol 
     - @cars.each do |cars|
         li 
@@ -15,8 +18,12 @@ ol
                 li 
                     img src="img/#{cars["img"]}" alt="Bild på bil"/
                 li 
-                    = "Price TBA"
+                    = "Price #{cars["purchase_price"]} SEK"
                 li 
                     form action="purchase" method="post"
                         input type="hidden" name="id" value="#{cars["id"]}"
+                        input type="hidden" name="purchase_price" value="#{cars["purchase_price"]}"
                         input type="submit" value="Purchase"
+                li
+                    = "---------------------"
+                

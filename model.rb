@@ -1,0 +1,1 @@
+#Skriv alla databas funktioner här som ska användas i controllern
