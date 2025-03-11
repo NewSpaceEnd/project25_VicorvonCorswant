@@ -20,6 +20,10 @@ ol
                 li 
                     = "Potential sale price #{cars["sell_price"]} SEK"
                 li 
+                    form action="modify" method="get"
+                        input type="hidden" name="id" value="#{cars["id"]}"
+                        input type="submit" value="Modify"
+                li 
                     form action="sell" method="post"
                         input type="hidden" name="id" value="#{cars["id"]}"
                         input type="submit" value="Sell"

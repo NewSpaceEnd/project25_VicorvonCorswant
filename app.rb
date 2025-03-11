@@ -51,7 +51,7 @@ get ('/market') do
     session[:user] = results
     @cars = session[:cars]
     @user = session[:user]
-    p @user
+    #p @user
     slim(:market)
 end
 
@@ -92,3 +92,39 @@ post ('/sell') do
     db.execute("UPDATE users SET money = ? WHERE id = 1", [money_left])
     redirect('/garage')
 end
+
+get ('/modify') do
+    db = SQLite3::Database.new("db/database.db")
+    db.results_as_hash = true
+    car_id = params["id"].to_i
+    p car_id
+    results = db.execute("SELECT * FROM cars WHERE id = ?", [car_id])
+    user = db.execute("SELECT money FROM users WHERE id = 1")
+    p results[0]
+    @car = results[0]
+    @user = user[0]
+    slim(:modify)
+end
+
+post ('/engine_swap') do
+    horsepower = params[:horsepower].to_i
+    horse_price = horsepower * 250
+    db = SQLite3::Database.new("db/database.db")
+    db.results_as_hash = true
+    car_id = params["id"].to_i
+    user = db.execute("SELECT money FROM users WHERE id = 1")
+    if user[0]["money"] >= horse_price
+        money_left = user[0]["money"].to_i - horse_price
+        db.execute("UPDATE users SET money = ? WHERE id = 1", [money_left])
+        power = db.execute("SELECT horsepower FROM cars WHERE id = ?", [car_id])
+        new_horsepower = power[0]["horsepower"].to_i + horsepower
+        db.execute("UPDATE cars SET horsepower = ? WHERE id = ?", [new_horsepower, car_id])
+        redirect('/garage')
+    else
+        redirect('/garage')
+    end
+
+
+end
+
+

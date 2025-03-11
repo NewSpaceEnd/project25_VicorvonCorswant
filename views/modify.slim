@@ -1,0 +1,44 @@
+ul 
+    li 
+        = "Name - #{@car["name"]}"
+    li  
+        = "Manufacturer - #{@car["manufacturer"]}"
+    li 
+        = "Production Year - #{@car["production_year"]}"
+    li 
+        = "Mileage - #{@car["mileage"]} miles"
+    li 
+        = "Class - #{@car["class"]}"
+    li 
+        img src="img/#{@car["img"]}" alt="Bild på bil"/
+    li
+        = "Bought for #{@car["purchase_price"]} SEK"
+    li 
+        = "Potential sale price #{@car["sell_price"]} SEK"
+    li 
+        = "Install new engine - Current engine: #{@car["horsepower"]} HP / Engine price * 250 SEK"
+        form action="engine_swap" method="post"
+            input type="number" name="horsepower" placeholder="Horsepower"
+            input type="hidden" name="id" value="#{@car["id"]}"
+            input type="submit" value="Install Engine"
+    li 
+        = "Window tint - Current tint: #{@car["window_tint"]} % / Tint price * 10 SEK"
+        form action="tint_swap" method="post"
+            input type="number" name="tint" placeholder="Tint %"
+            input type="hidden" name="id" value="#{@car["id"]}"
+            input type="submit" value="Install Tint"
+    li 
+        = "Install exhaust - Current power: #{@car["exhaust_power"]} HP / Exhasut power * 100 SEK"
+        form action="exhaust_swap" method="post"
+            input type="number" name="exhaust_power" placeholder="Exhaust power"
+            input type="hidden" name="id" value="#{@car["id"]}"
+            input type="submit" value="Install Exhaust"
+    li 
+        = "Install Sound System - Current power: #{@car["sound_system"]} W / Sound System power * 50 SEK"
+        form action="sound_swap" method="post"
+            input type="number" name="sound_system" placeholder="Sound System Power"
+            input type="hidden" name="id" value="#{@car["id"]}"
+            input type="submit" value="Install Sound System"
+    li 
+        = "You have #{@user["money"]} SEK to spend on this shitbox"
+        
