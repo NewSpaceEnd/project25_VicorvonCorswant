@@ -7,7 +7,8 @@ require 'sinatra/flash'
 enable :sessions
 require_relative './model.rb'
 
-
+#lägg till dynamiska routes
+#Fråga om redirect är okej?
 
 get ('/') do
     slim(:main_page)
