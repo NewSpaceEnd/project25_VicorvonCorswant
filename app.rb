@@ -3,8 +3,9 @@ require 'slim'
 require 'sqlite3'
 require 'sinatra/reloader'
 require 'bcrypt'
+require 'sinatra/flash'
 enable :sessions
-require_relative 'model.rb'
+require_relative './model.rb'
 
 
 get ('/') do
@@ -15,116 +16,53 @@ get ('/login') do
     slim(:login)
 end
 
+post ('/login_user') do
+    redirect((login_user(params["username"], params["password"])))
+end
+
 get ('/signup') do
     slim(:register)
 end
 
 post ('/register') do
-    db = SQLite3::Database.new("db/website.db")
-    db.results_as_hash = true
-    username = params["username"]
-    password = params["password"]
-    money = params["money"]
-    password_confirm = params["password_confirm"]
-    if password == password_confirm
-        password_digest = BCrypt::Password.create(password)
-        db = SQLite3::Database.new("db/database.db")
-        db.execute("INSERT INTO users (username, password, money) VALUES (?, ?, ?)", [username, password_digest, 1000])
-        redirect('/login')
-    else
-        redirect('/signup')
-    end
-end
-
-get ('/load_market') do
-    db = SQLite3::Database.new("db/database.db")
-    db.results_as_hash = true
-    results = db.execute("SELECT * FROM cars WHERE user_id = 0")
-    session[:cars] = results
-    redirect('/market')
+    redirect(register_new_user(params["username"], params["password"]))
 end
 
 get ('/market') do
-    db = SQLite3::Database.new("db/database.db")
-    db.results_as_hash = true
-    results = db.execute("SELECT money FROM users WHERE id = 1")
-    session[:user] = results
-    @cars = session[:cars]
-    @user = session[:user]
-    #p @user
+    load_market(session[:user_id]) 
     slim(:market)
 end
 
 get ('/garage') do
-    db = SQLite3::Database.new("db/database.db")
-    db.results_as_hash = true
-    results = db.execute("SELECT * FROM cars WHERE user_id = 1")
-    session[:garage] = results
-    @garage = session[:garage]
+    load_garage(session[:user_id]) 
     slim(:garage)
 end
 
 post ('/purchase') do
-    db = SQLite3::Database.new("db/database.db")
-    db.results_as_hash = true
-    results = db.execute("SELECT money FROM users WHERE id = 1")
-    if results[0]["money"] >= params["purchase_price"].to_i
-    car_id = params["id"].to_i
-    db = SQLite3::Database.new("db/database.db")
-    db.execute("UPDATE cars SET user_id = 1 WHERE id = ?", [car_id])
-    money_left = results[0]["money"].to_i - params["purchase_price"].to_i
-    db.execute("UPDATE users SET money = ? WHERE id = 1", [money_left])
-    redirect('/garage')
-    else
-        redirect('/market')
-    end
+    redirect(purchase_car(params["id"].to_i, params["purchase_price"].to_i, session[:user_id]))
 end
 
 post ('/sell') do
-    car_id = params["id"].to_i
-    p car_id
-    db = SQLite3::Database.new("db/database.db")
-    db.results_as_hash = true
-    db.execute("UPDATE cars SET user_id = 0 WHERE id = ?", [car_id])
-    results = db.execute("SELECT money FROM users WHERE id = 1")
-    money = db.execute("SELECT sell_price FROM cars WHERE id = ?", [car_id])
-    money_left = results[0]["money"].to_i + money[0]["sell_price"].to_i
-    db.execute("UPDATE users SET money = ? WHERE id = 1", [money_left])
-    redirect('/garage')
+    redirect(sell_car(params["id"].to_i, session[:user_id]))
 end
 
 get ('/modify') do
-    db = SQLite3::Database.new("db/database.db")
-    db.results_as_hash = true
-    car_id = params["id"].to_i
-    p car_id
-    results = db.execute("SELECT * FROM cars WHERE id = ?", [car_id])
-    user = db.execute("SELECT money FROM users WHERE id = 1")
-    p results[0]
-    @car = results[0]
-    @user = user[0]
+    modify_car(params["id"].to_i, session[:user_id])
     slim(:modify)
 end
 
 post ('/engine_swap') do
-    horsepower = params[:horsepower].to_i
-    horse_price = horsepower * 250
-    db = SQLite3::Database.new("db/database.db")
-    db.results_as_hash = true
-    car_id = params["id"].to_i
-    user = db.execute("SELECT money FROM users WHERE id = 1")
-    if user[0]["money"] >= horse_price
-        money_left = user[0]["money"].to_i - horse_price
-        db.execute("UPDATE users SET money = ? WHERE id = 1", [money_left])
-        power = db.execute("SELECT horsepower FROM cars WHERE id = ?", [car_id])
-        new_horsepower = power[0]["horsepower"].to_i + horsepower
-        db.execute("UPDATE cars SET horsepower = ? WHERE id = ?", [new_horsepower, car_id])
-        redirect('/garage')
-    else
-        redirect('/garage')
-    end
-
-
+    redirect(install_parts(params["id"].to_i, params["horsepower"].to_i, "horsepower", session[:user_id], 250))
 end
 
+post ('/tint_swap') do
+    redirect(install_parts(params["id"].to_i, params["tint"].to_i, "window_tint", user_isession[:user_id], 10))
+end
 
+post ('/exhaust_swap') do
+    redirect(install_parts(params["id"].to_i, params["exhaust_power"].to_i, "exhaust_power", session[:user_id], 100))
+end
+
+post ('/sound_system_swap') do
+    redirect(install_parts(params["id"].to_i, params["sound_system"].to_i, "sound_system", session[:user_id], 50))
+end

@@ -35,7 +35,7 @@ ul
             input type="submit" value="Install Exhaust"
     li 
         = "Install Sound System - Current power: #{@car["sound_system"]} W / Sound System power * 50 SEK"
-        form action="sound_swap" method="post"
+        form action="sound_system_swap" method="post"
             input type="number" name="sound_system" placeholder="Sound System Power"
             input type="hidden" name="id" value="#{@car["id"]}"
             input type="submit" value="Install Sound System"
