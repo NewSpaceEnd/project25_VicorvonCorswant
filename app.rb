@@ -8,8 +8,15 @@ enable :sessions
 require_relative './model.rb'
 
 
+
 get ('/') do
     slim(:main_page)
+end
+
+get ('/logout') do
+    session[:user_id] = nil
+    flash[:notice] = "You have been logged out!"
+    redirect("/")
 end
 
 get ('/login') do
@@ -33,8 +40,11 @@ get ('/market') do
     slim(:market)
 end
 
-get ('/garage') do
-    load_garage(session[:user_id]) 
+get ('/garage') do #Inte så fin lösning
+    if load_garage(session[:user_id]) == "/login"
+        flash[:notice] = "You need to be logged in to access this page!"
+        redirect("/login")
+    end
     slim(:garage)
 end
 

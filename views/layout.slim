@@ -12,6 +12,9 @@ html lang="en"
             a href="/signup" Register
             a href="/market" Market
             a href="/garage" Garage
-    
+        - if session[:user_id] != nil
+            a href="/logout" Logout
+        - if flash[:notice]
+            p = flash[:notice]
 
         == yield

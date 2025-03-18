@@ -9,8 +9,10 @@ def register_new_user(username, password)
         password_digest = BCrypt::Password.create(password)
         db = SQLite3::Database.new("db/database.db")
         db.execute("INSERT INTO users (username, password, money) VALUES (?, ?, ?)", [username, password_digest, 1000])
+        flash[:notice] = "Account successfully created!"
         return "/login"
     else
+        flash[:notice] = "Opps! Something went wrong, please try again!"
         return "/signup"
     end
 end
@@ -22,11 +24,14 @@ def login_user(username, password)
     if !results.nil?
         if BCrypt::Password.new(results[0]["password"]) == password
             session[:user_id] = results[0]["id"]
+            flash[:notice] = "Welcome back! #{username}"
             return "/garage"
         else
+            flash[:notice] = "Opps! Something went wrong, please try again!"
             return "/login"
         end
     else
+        flash[:notice] = "Opps! Something went wrong, please try again!"
         return "/login"
     end
 end
@@ -48,6 +53,10 @@ def load_market(user_id)
 end
 
 def load_garage(user_id)
+    if user_id.nil?
+        puts "BAMSE!!!!!!"
+        return "/login"
+    end
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
     results = db.execute("SELECT * FROM cars WHERE user_id = ?", [user_id])
@@ -56,6 +65,10 @@ def load_garage(user_id)
 end
 
 def purchase_car(car_id, purchase_price, user_id)
+    if user_id.nil?
+        flash[:notice] = "You need to be logged in to purchase a car!"
+        return "/login"
+    end
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
     results = db.execute("SELECT money FROM users WHERE id = 1")
@@ -66,8 +79,10 @@ def purchase_car(car_id, purchase_price, user_id)
         db.execute("UPDATE cars SET sell_price = ? WHERE id = ?", [car_sale_price, car_id])
         money_left = (results[0]["money"].to_i - purchase_price).truncate(2)
         db.execute("UPDATE users SET money = ? WHERE id = ?", [money_left, user_id])
+        flash[:notice] = "Car successfully purchased!"
         return "/garage"
     else
+        flash[:notice] = "You don't have enough money to purchase this car!"
         return "/market"
     end
 end
@@ -83,6 +98,7 @@ def sell_car(car_id, user_id)
     money = db.execute("SELECT sell_price FROM cars WHERE id = ?", [car_id])
     money_left = results[0]["money"].to_i + money[0]["sell_price"].to_i
     db.execute("UPDATE users SET money = ? WHERE id = ?", [money_left, user_id])
+    flash[:notice] = "Car successfully sold!"
     return "/garage"
 end
 
@@ -109,9 +125,10 @@ def install_parts(car_id, part_value, part, user_id, times_value)
         sale_price = db.execute("SELECT sell_price FROM cars WHERE id = ?", [car_id])
         new_sale_price = (((part_value * times_value) * 1.2) + sale_price[0]["sell_price"]).truncate(2)
         db.execute("UPDATE cars SET sell_price = ? WHERE id = ?", [new_sale_price, car_id])
-
+        flash[:notice] = "Part successfully installed!"
         return "/garage"
     else
+        flash[:notice] = "You don't have enough money to install some parts!"
         return "/garage"
     end
 end
