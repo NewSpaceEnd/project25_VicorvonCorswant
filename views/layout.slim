@@ -14,6 +14,9 @@ html lang="en"
             a href="/garage" Garage
         - if session[:user_id] != nil
             a href="/logout" Logout
+        -if session[:admin] == true
+            a href="/admin" Admin
+            p = "You are logged in as an admin"
         - if flash[:notice]
             p = flash[:notice]
 

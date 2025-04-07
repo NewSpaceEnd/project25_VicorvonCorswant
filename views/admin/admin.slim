@@ -1,0 +1,20 @@
+h1 Welcome to the Admin Page 
+h2 Here you can see all users and their cars, and also delete them if you want to!
+
+ol
+    - @users.each do |user|
+        li
+            ul
+                li 
+                    - if user["id"] != 0
+                        form action="delete_user" method="post"
+                            input type="hidden" name="id" value="#{user["id"]}"
+                            input type="submit" value="Delete User"
+                li 
+                    form action="admin/:id" method="get"
+                        input type="hidden" name="id" value="#{user["id"]}"
+                        input type="submit" value="More information"
+                li 
+                    = "Username - #{user["username"]}"
+                li 
+                    = "Money - #{user["money"]} SEK"

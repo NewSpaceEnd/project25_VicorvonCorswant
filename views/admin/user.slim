@@ -1,0 +1,29 @@
+h1 Here you can find information about all cars owned by #{@users[0]["username"]} #NÅGOT FEL HÄR VETEFAN
+- @cars.each do |cars|
+    ul
+        li
+            = "Name - #{cars["name"]}"
+        li
+            = "Manufacturer - #{cars["manufacturer"]}"
+        li 
+            = "Production Year - #{cars["production_year"]}"
+        li 
+            = "Mileage - #{cars["mileage"]} miles"
+        li 
+            = "Class - #{cars["class"]}"
+        li 
+            img src="img/#{cars["img"]}" alt="Bild på bil"/
+        li 
+            = "Bought for #{cars["purchase_price"]} SEK"
+        li 
+            = "Potential sale price #{cars["sell_price"]} SEK"
+        li 
+            form action="modify" method="get"
+                input type="hidden" name="id" value="#{cars["id"]}"
+                input type="submit" value="Modify"
+        li 
+            form action="sell" method="post"
+                input type="hidden" name="id" value="#{cars["id"]}"
+                input type="submit" value="Sell"
+        li
+            = "---------------------"

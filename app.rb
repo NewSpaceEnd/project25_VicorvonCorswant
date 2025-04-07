@@ -10,6 +10,20 @@ require_relative './model.rb'
 #lägg till dynamiska routes
 #Fråga om redirect är okej?
 
+get ('/admin') do
+    load_admin_page()
+    slim(:"admin/admin")
+end
+
+get ('/admin/:id') do
+    load_user_page(params["id"])
+    slim(:"admin/user")
+end
+
+post ('/delete_user') do
+    redirect(delete_user(params["id"].to_i))
+end
+
 get ('/') do
     slim(:main_page)
 end
@@ -41,7 +55,7 @@ get ('/market') do
     slim(:market)
 end
 
-get ('/garage') do #Inte så fin lösning
+get ('/garage') do 
     if load_garage(session[:user_id]) == "/login"
         flash[:notice] = "You need to be logged in to access this page!"
         redirect("/login")
@@ -62,18 +76,6 @@ get ('/modify') do
     slim(:modify)
 end
 
-post ('/engine_swap') do
-    redirect(install_parts(params["id"].to_i, params["horsepower"].to_i, "horsepower", session[:user_id], 250))
-end
-
-post ('/tint_swap') do
-    redirect(install_parts(params["id"].to_i, params["tint"].to_i, "window_tint", user_isession[:user_id], 10))
-end
-
-post ('/exhaust_swap') do
-    redirect(install_parts(params["id"].to_i, params["exhaust_power"].to_i, "exhaust_power", session[:user_id], 100))
-end
-
-post ('/sound_system_swap') do
-    redirect(install_parts(params["id"].to_i, params["sound_system"].to_i, "sound_system", session[:user_id], 50))
+post ('/part_swap') do
+    redirect(install_parts(params["id"].to_i, params["part_value"].to_i, params["part"], session[:user_id]))
 end

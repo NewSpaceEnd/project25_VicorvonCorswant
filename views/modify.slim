@@ -16,29 +16,36 @@ ul
     li 
         = "Potential sale price #{@car["sell_price"]} SEK"
     li 
-        = "Install new engine - Current engine: #{@car["horsepower"]} HP / Engine price * 250 SEK"
-        form action="engine_swap" method="post"
-            input type="number" name="horsepower" placeholder="Horsepower"
-            input type="hidden" name="id" value="#{@car["id"]}"
-            input type="submit" value="Install Engine"
-    li 
-        = "Window tint - Current tint: #{@car["window_tint"]} % / Tint price * 10 SEK"
-        form action="tint_swap" method="post"
-            input type="number" name="tint" placeholder="Tint %"
-            input type="hidden" name="id" value="#{@car["id"]}"
-            input type="submit" value="Install Tint"
-    li 
-        = "Install exhaust - Current power: #{@car["exhaust_power"]} HP / Exhasut power * 100 SEK"
-        form action="exhaust_swap" method="post"
-            input type="number" name="exhaust_power" placeholder="Exhaust power"
-            input type="hidden" name="id" value="#{@car["id"]}"
-            input type="submit" value="Install Exhaust"
-    li 
-        = "Install Sound System - Current power: #{@car["sound_system"]} W / Sound System power * 50 SEK"
-        form action="sound_system_swap" method="post"
-            input type="number" name="sound_system" placeholder="Sound System Power"
-            input type="hidden" name="id" value="#{@car["id"]}"
-            input type="submit" value="Install Sound System"
-    li 
         = "You have #{@user["money"]} SEK to spend on this shitbox"
+    li 
+        = "---------------------"
+    li
+        = "Engine price * 250 SEK"
+    li
+        = "Tint price * 10 SEK"
+    li
+        = "Exhaust power * 100 SEK"
+    li
+        = "Sound System power * 50 SEK"
+    li 
+        = "---------------------"
+    li 
+        = "Current Engine Power: #{@car["horsepower"]}"
+    li 
+        = "Current Window Tint: #{@car["window_tint"]}"
+    li 
+        = "Current Exhaust Power: #{@car["exhaust_power"]}"
+    li 
+        = "Current Sound System Power: #{@car["sound_system"]}"
+    li 
+        = "Choose the part to upgrade"
+        form action="part_swap" method="post"
+            select name="part"
+                option value="horsepower" Engine
+                option value="window_tint" Window Tint
+                option value="exhaust_power" Exhaust
+                option value="sound_system" Sound System
+            input type="hidden" name="id" value="#{@car["id"]}"
+            input type="number" name="part_value" placeholder="Part value" min = "1"
+            input type="submit" value="Install Part"
         
