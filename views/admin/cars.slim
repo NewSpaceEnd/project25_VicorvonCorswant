@@ -1,0 +1,26 @@
+h1 Here you can see all the cars and their owners and you can delete or create new cars if you want to 
+a href="/admin/create" Create new car
+ol
+    - @cars.each do |car|
+        li
+            ul 
+                li 
+                    = "Name - #{car["name"]}"
+                li 
+                    = "Owner - #{car["username"]}"
+                li 
+                    = "Manufacturer - #{car["manufacturer"]}"
+                li 
+                    = "Production Year - #{car["production_year"]}"
+                li 
+                    = "Mileage - #{car["mileage"]} miles"
+                li 
+                    = "Class - #{car["class"]}"
+                li 
+                    img src="../img/#{car["img"]}" alt="Bild på bil"
+                li 
+                    = "Bought for #{car["purchase_price"]} SEK"
+                li 
+                    = "Potential sale price #{car["sell_price"]} SEK"
+                li 
+                    = "---------------------"

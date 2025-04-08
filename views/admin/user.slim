@@ -1,6 +1,10 @@
-h1 Here you can find information about all cars owned by #{@users[0]["username"]} #NÅGOT FEL HÄR VETEFAN
+h1 Here you can find information about all cars owned by #{@users[0]["username"]} 
+- if @cars.empty?
+    p This user is very poor... can not even afford a car... 
 - @cars.each do |cars|
     ul
+        li 
+            = "---------------------"
         li
             = "Name - #{cars["name"]}"
         li
@@ -12,7 +16,7 @@ h1 Here you can find information about all cars owned by #{@users[0]["username"]
         li 
             = "Class - #{cars["class"]}"
         li 
-            img src="img/#{cars["img"]}" alt="Bild på bil"/
+            img src="../img/#{cars["img"]}" alt="Bild på bil"
         li 
             = "Bought for #{cars["purchase_price"]} SEK"
         li 
@@ -22,8 +26,9 @@ h1 Here you can find information about all cars owned by #{@users[0]["username"]
                 input type="hidden" name="id" value="#{cars["id"]}"
                 input type="submit" value="Modify"
         li 
-            form action="sell" method="post"
+            form action="../sell" method="post"
                 input type="hidden" name="id" value="#{cars["id"]}"
+                input type="hidden" name="user_id" value="#{@users[0]["id"]}"
                 input type="submit" value="Sell"
         li
             = "---------------------"

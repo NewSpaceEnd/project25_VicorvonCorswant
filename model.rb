@@ -92,6 +92,8 @@ def purchase_car(car_id, purchase_price, user_id)
 end
 
 def sell_car(car_id, user_id)
+    p car_id
+    p user_id
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
     db.execute("UPDATE cars SET user_id = 0 WHERE id = ?", [car_id])
@@ -157,7 +159,7 @@ end
 def load_user_page(user_id)
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
-    results_cars = db.execute("SELECT * FROM cars WHERE id = ?", [user_id])
+    p results_cars = db.execute("SELECT * FROM cars WHERE user_id = ?", [user_id])
     results_users = db.execute("SELECT * FROM users WHERE id = ?", [user_id])
     session[:users] = results_users
     session[:cars] = results_cars
@@ -169,6 +171,19 @@ def delete_user(user_id)
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
     db.execute("DELETE FROM users WHERE id = ?", [user_id])
+    db.execute("UPDATE cars SET user_id = 0 WHERE user_id = ?", [user_id])
     flash[:notice] = "User successfully deleted!"
     return "/admin"
+end
+
+def load_all_cars()
+    db = SQLite3::Database.new("db/database.db")
+    db.results_as_hash = true
+    results_cars = db.execute("
+        SELECT * 
+        FROM cars 
+        INNER JOIN users 
+        ON cars.user_id = users.id
+    ")
+    @cars = results_cars
 end

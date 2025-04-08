@@ -1,0 +1,42 @@
+h1 Here you can create a new car
+h2 It is important that some data gets added correctly or otherwise images will not load etc.
+h2 IMAGES MUST BE JPG!
+
+form action="/admin/create" method="post"
+    label for="name" Name
+    input type="text" name="name" id="name" required
+    br/
+    label for="manufacturer" Manufacturer
+    input type="text" name="manufacturer" id="manufacturer" required
+    br/
+    label for="production_year" Production Year
+    input type="number" name="production_year" id="production_year" required
+    br/
+    label for="mileage" Mileage
+    input type="number" name="mileage" id="mileage" required
+    br/
+    label for="class" Class
+    input type="text" name="class" id="class" required
+    br/
+    label for="img" Image Name (without .jpg)
+    input type="text" name="img" id="img"
+    br/
+    label for="purchase_price" Purchase Price
+    input type="number" name="purchase_price" id="purchase_price"
+    br/
+    label for="sell_price" Sell Price
+    input type="number" name="sell_price" id="sell_price"
+    br/
+    label for="horsepower" Horsepower
+    input type="number" name="horsepower" id="horsepower"
+    br/
+    label for="window_tint" Window Tint
+    input type="number" name="window_tint" id="window_tint"
+    br/
+    label for="exhaust_power" Exhaust Power
+    input type="number" name="exhaust_power" id="exhaust_power"
+    br/
+    label for="sound_system" Sound System	
+    input type="number" name="sound_system" id="sound_system"
+    br/
+    input type="submit" value="Create Car"

@@ -15,6 +15,16 @@ get ('/admin') do
     slim(:"admin/admin")
 end
 
+get ('/admin/cars') do
+    load_all_cars()
+    slim(:"admin/cars")
+
+end
+
+get ('/admin/create') do
+    slim(:"admin/create")
+end
+
 get ('/admin/:id') do
     load_user_page(params["id"])
     slim(:"admin/user")
@@ -23,6 +33,8 @@ end
 post ('/delete_user') do
     redirect(delete_user(params["id"].to_i))
 end
+
+
 
 get ('/') do
     slim(:main_page)
@@ -68,7 +80,11 @@ post ('/purchase') do
 end
 
 post ('/sell') do
-    redirect(sell_car(params["id"].to_i, session[:user_id]))
+    if params["user_id"].nil?
+        redirect(sell_car(params["id"].to_i, session[:user_id]))
+    else
+        redirect(sell_car(params["id"].to_i, params["user_id"]))
+    end
 end
 
 get ('/modify') do
