@@ -1,42 +1,43 @@
 h1 Here you can create a new car
 h2 It is important that some data gets added correctly or otherwise images will not load etc.
-h2 IMAGES MUST BE JPG!
+h2 IMAGES MUST BE A NORMAL FILE TYPE
 
-form action="/admin/create" method="post"
-    label for="name" Name
-    input type="text" name="name" id="name" required
+form action="/create_car" method="post" enctype="multipart/form-data"
+    label for="image_name" Upload Image:
+    input type="file" name="image_name" id="image_name"
     br/
-    label for="manufacturer" Manufacturer
-    input type="text" name="manufacturer" id="manufacturer" required
+    label for="name" Name: Text
+    input type="text" name="name" id="name"
     br/
-    label for="production_year" Production Year
-    input type="number" name="production_year" id="production_year" required
+    label for="manufacturer" Manufacturer: Text
+    input type="text" name="manufacturer" id="manufacturer"
     br/
-    label for="mileage" Mileage
-    input type="number" name="mileage" id="mileage" required
+    label for="production_year" Production Year: Number
+    input type="number" name="production_year" id="production_year"
     br/
-    label for="class" Class
-    input type="text" name="class" id="class" required
+    label for="mileage" Mileage: Number
+    input type="number" name="mileage" id="mileage" min="0"
     br/
-    label for="img" Image Name (without .jpg)
-    input type="text" name="img" id="img"
+    label for="class" Class: Number
+    input type="text" name="class" id="class" min="0"
     br/
-    label for="purchase_price" Purchase Price
-    input type="number" name="purchase_price" id="purchase_price"
+    label for="purchase_price" Purchase Price: Number
+    input type="number" name="purchase_price" id="purchase_price" min="0"
     br/
-    label for="sell_price" Sell Price
-    input type="number" name="sell_price" id="sell_price"
+    label for="sell_price" Sell Price: Number
+    input type="number" name="sell_price" id="sell_price" min="0"
     br/
-    label for="horsepower" Horsepower
-    input type="number" name="horsepower" id="horsepower"
+    label for="horsepower" Horsepower: Number
+    input type="number" name="horsepower" id="horsepower" min="0"
     br/
-    label for="window_tint" Window Tint
-    input type="number" name="window_tint" id="window_tint"
+    label for="window_tint" Window Tint: Number
+    input type="number" name="window_tint" id="window_tint" min="0"
     br/
-    label for="exhaust_power" Exhaust Power
-    input type="number" name="exhaust_power" id="exhaust_power"
+    label for="exhaust_power" Exhaust Power: Number
+    input type="number" name="exhaust_power" id="exhaust_power" min="0"
     br/
-    label for="sound_system" Sound System	
-    input type="number" name="sound_system" id="sound_system"
+    label for="sound_system" Sound System: Number
+    input type="number" name="sound_system" id="sound_system" min="0"
     br/
     input type="submit" value="Create Car"
+p Please make sure that everyone input is correct and that the file type is correct and supported!

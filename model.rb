@@ -1,5 +1,11 @@
 #Skriv alla databas funktioner här som ska användas i controllern
 
+##
+# Registers a new user in the database.
+#
+# @param [String] username The username of the new user.
+# @param [String] password The password of the new user.
+# @return [String] Redirect path after registration.
 def register_new_user(username, password)   
 
     db = SQLite3::Database.new("db/website.db")
@@ -17,6 +23,12 @@ def register_new_user(username, password)
     end
 end
 
+##
+# Logs in a user by verifying their credentials.
+#
+# @param [String] username The username of the user.
+# @param [String] password The password of the user.
+# @return [String] Redirect path after login.
 def login_user(username, password)
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
@@ -41,6 +53,11 @@ def login_user(username, password)
     end
 end
 
+##
+# Loads the market data for the current user.
+#
+# @param [Integer] user_id The ID of the user.
+# @return [void]
 def load_market(user_id)
     #Loads the current market
     db = SQLite3::Database.new("db/database.db")
@@ -57,6 +74,11 @@ def load_market(user_id)
     @user = session[:user]
 end
 
+##
+# Loads the garage data for the current user.
+#
+# @param [Integer] user_id The ID of the user.
+# @return [String, nil] Redirect path if the user is not logged in, otherwise nil.
 def load_garage(user_id)
     if user_id.nil?
         return "/login"
@@ -68,6 +90,13 @@ def load_garage(user_id)
     @garage = session[:garage]
 end
 
+##
+# Handles the purchase of a car by a user.
+#
+# @param [Integer] car_id The ID of the car to purchase.
+# @param [Integer] purchase_price The price of the car.
+# @param [Integer] user_id The ID of the user purchasing the car.
+# @return [String] Redirect path after purchase.
 def purchase_car(car_id, purchase_price, user_id)
     if user_id.nil?
         flash[:notice] = "You need to be logged in to purchase a car!"
@@ -78,36 +107,13 @@ def purchase_car(car_id, purchase_price, user_id)
     results = db.execute("SELECT money FROM users WHERE id = ?", [user_id])
     if results[0]["money"] >= purchase_price
         db = SQLite3::Database.new("db/database.db")
-        db.execute("UPDATE cars SET user_id = ? WHERE id = ?", [user_id, car_id])
-        car_sale_price = purchase_price * 0.6
-        db.execute("UPDATE cars SET sell_price = ? WHERE id = ?", [car_sale_price, car_id])
-        money_left = (results[0]["money"].to_i - purchase_price).truncate(2)
-        db.execute("UPDATE users SET money = ? WHERE id = ?", [money_left, user_id])
-        flash[:notice] = "Car successfully purchased!"
-        return "/garage"
-    else
-        flash[:notice] = "You don't have enough money to purchase this car!"
-        return "/market"
-    end
-end
 
-def sell_car(car_id, user_id)
-    p car_id
-    p user_id
-    db = SQLite3::Database.new("db/database.db")
-    db.results_as_hash = true
-    db.execute("UPDATE cars SET user_id = 0 WHERE id = ?", [car_id])
-    sell_price = db.execute("SELECT sell_price FROM cars WHERE id = ?", [car_id])
-    new_purchase_price = (sell_price[0]["sell_price"] * 1.2).truncate(0)
-    db.execute("UPDATE cars SET purchase_price = ? WHERE id = ?", [new_purchase_price, car_id])
-    results = db.execute("SELECT money FROM users WHERE id = ?", [user_id])
-    money = db.execute("SELECT sell_price FROM cars WHERE id = ?", [car_id])
-    money_left = results[0]["money"].to_i + money[0]["sell_price"].to_i
-    db.execute("UPDATE users SET money = ? WHERE id = ?", [money_left, user_id])
-    flash[:notice] = "Car successfully sold!"
-    return "/garage"
-end
-
+##
+# Loads the data for modifying a specific car.
+#
+# @param [Integer] car_id The ID of the car to modify.
+# @param [Integer] user_id The ID of the user modifying the car.
+# @return [void]
 def modify_car(car_id, user_id)
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
@@ -117,6 +123,14 @@ def modify_car(car_id, user_id)
     @user = user[0]
 end
 
+##
+# Installs a part on a car and updates its attributes.
+#
+# @param [Integer] car_id The ID of the car.
+# @param [Integer] part_value The value of the part to install.
+# @param [String] part_name The name of the part to install (e.g., "horsepower").
+# @param [Integer] user_id The ID of the user installing the part.
+# @return [String] Redirect path after part installation.
 def install_parts(car_id, part_value, part_name, user_id)
     if part_name == "horsepower"
         times_value = 100
@@ -148,6 +162,10 @@ def install_parts(car_id, part_value, part_name, user_id)
     end
 end
 
+##
+# Loads the admin page data.
+#
+# @return [void]
 def load_admin_page()
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
@@ -156,6 +174,11 @@ def load_admin_page()
     @users = session[:users]
 end
 
+##
+# Loads the data for a specific user page.
+#
+# @param [Integer] user_id The ID of the user.
+# @return [void]
 def load_user_page(user_id)
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
@@ -167,6 +190,11 @@ def load_user_page(user_id)
     @users = session[:users]
 end
 
+##
+# Deletes a user and updates related data.
+#
+# @param [Integer] user_id The ID of the user to delete.
+# @return [String] Redirect path after deletion.
 def delete_user(user_id)
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
@@ -176,6 +204,10 @@ def delete_user(user_id)
     return "/admin"
 end
 
+##
+# Loads all cars and their associated user data.
+#
+# @return [void]
 def load_all_cars()
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
@@ -187,3 +219,77 @@ def load_all_cars()
     ")
     @cars = results_cars
 end
+
+##
+# Validates form input.
+#
+# @param [Object] input The input to validate.
+# @param [String] check_for The type of validation to perform ("Text" or "Integer").
+# @return [Boolean, String] True if valid, otherwise a redirect path.
+def check_form(input, check_for)
+    if input.nil?
+        flash[:notice] = "Opps! Something went wrong, please try again!"
+        return "/admin/create_cars"
+    end
+    if check_for == "Text"
+        if input.type != "".type
+            flash[:notice] = "Opps! Something went wrong, please try again!"
+            return "/admin/create_cars"
+        elsif input.type != 0.type
+            flash[:notice] = "Opps! Something went wrong, please try again!"
+            return "/admin/create_cars"
+        end
+    end
+    return true
+end
+
+##
+# Creates a new car in the database.
+#
+# @param [Array] array The array of car attributes.
+# @return [String] Redirect path after car creation.
+def create_car(array)
+    p array
+    i = 0
+    while i < array.length
+        while i < 3
+            if check_form(array[i], "Text") != true
+                return check_form(array[i], "Text")
+            end
+            i += 1
+        end
+        if check_form(array[i], "Integer") != true
+            return check_form(array[i], "Integer")
+        end
+        i += 1
+    end
+    p "Allt gick bra inget paja :3"
+    #p name
+    #p manufacturer
+    #p production_year
+    #p mileage
+    #p class_type
+    #p image_name
+    #p purchase_price
+    #p sell_price
+    #p horsepower
+    #p window_tint
+    #p exhaust_power
+    #p sound_system
+
+    #Om allt går bra då
+    if true == false
+        db = SQLite3::Database.new("db/database.db")
+        db.results_as_hash = true
+        db.execute("INSERT INTO cars (name, manufacturer, production_year, mileage, class_type, image_name, purchase_price, sell_price, horsepower, window_tint, exhaust_power, sound_system) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [name, manufacturer, production_year.to_i, mileage.to_i, class_type.to_i, image_name.to_s, purchase_price.to_i, sell_price.to_i, horsepower.to_i, window_tint.to_i, exhaust_power.to_i, sound_system.to_i])
+        flash[:notice] = "Car successfully created!"
+
+        #p params["image_name"][:filename]
+        
+        #p file.read
+        f = File.open("public/img/#{@filename}", 'wb') do |f|
+            f.write(@file.read)
+        end
+        #p "Filename: #{@filename}"
+        #p "File path: public/img/#{@filename}"
+        #p "File content: #{File.read("public/img/#{@filename}")}"
