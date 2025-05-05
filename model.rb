@@ -59,12 +59,12 @@ end
 # @param [Integer] user_id The ID of the user.
 # @return [void]
 def load_market(user_id)
+    
     #Loads the current market
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
     results = db.execute("SELECT * FROM cars WHERE user_id = 0")
     session[:cars] = results
-
     #Loads the users money
     db = SQLite3::Database.new("db/database.db")
     db.results_as_hash = true
@@ -107,7 +107,11 @@ def purchase_car(car_id, purchase_price, user_id)
     results = db.execute("SELECT money FROM users WHERE id = ?", [user_id])
     if results[0]["money"] >= purchase_price
         db = SQLite3::Database.new("db/database.db")
-
+    else
+        flash[:notice] = "You don't have enough money to purchase this car!"
+        return "/market"
+    end
+end
 ##
 # Loads the data for modifying a specific car.
 #
@@ -226,70 +230,76 @@ end
 # @param [Object] input The input to validate.
 # @param [String] check_for The type of validation to perform ("Text" or "Integer").
 # @return [Boolean, String] True if valid, otherwise a redirect path.
-def check_form(input, check_for)
-    if input.nil?
-        flash[:notice] = "Opps! Something went wrong, please try again!"
-        return "/admin/create_cars"
-    end
-    if check_for == "Text"
-        if input.type != "".type
-            flash[:notice] = "Opps! Something went wrong, please try again!"
-            return "/admin/create_cars"
-        elsif input.type != 0.type
-            flash[:notice] = "Opps! Something went wrong, please try again!"
-            return "/admin/create_cars"
-        end
-    end
-    return true
-end
+#def check_form(input, check_for)
+#    if input.nil?
+#        flash[:notice] = "Opps! Something went wrong, please try again!"
+#        return "/admin/create_cars"
+#    end
+#    if check_for == "Text"
+#        if input.type != "".type
+#            flash[:notice] = "Opps! Something went wrong, please try again!"
+#            return "/admin/create_cars"
+#        elsif input.type != 0.type
+#            flash[:notice] = "Opps! Something went wrong, please try again!"
+#            return "/admin/create_cars"
+#        end
+#    end
+#    return true
+#end
 
 ##
 # Creates a new car in the database.
 #
 # @param [Array] array The array of car attributes.
 # @return [String] Redirect path after car creation.
-def create_car(array)
-    p array
-    i = 0
-    while i < array.length
-        while i < 3
-            if check_form(array[i], "Text") != true
-                return check_form(array[i], "Text")
-            end
-            i += 1
-        end
-        if check_form(array[i], "Integer") != true
-            return check_form(array[i], "Integer")
-        end
-        i += 1
+def create_car(name, manufacturer, image_name, file, production_year, mileage, class_type, purchase_price, sell_price, horsepower, window_tint, exhaust_power, sound_system)
+    # Ensure the file is saved to the public/img folder
+    File.open("public/img/#{image_name}", 'wb') do |f|
+        f.write(file.read)
     end
+
+    # Log success for debugging
+    puts "File saved successfully to public/img/#{image_name}"
+
     p "Allt gick bra inget paja :3"
-    #p name
-    #p manufacturer
-    #p production_year
-    #p mileage
-    #p class_type
-    #p image_name
-    #p purchase_price
-    #p sell_price
-    #p horsepower
-    #p window_tint
-    #p exhaust_power
-    #p sound_system
+    db = SQLite3::Database.new("db/database.db")
+    db.results_as_hash = true
+    db.execute("INSERT INTO cars (user_id, name, manufacturer, production_year, mileage, class, img, purchase_price, sell_price, horsepower, window_tint, exhaust_power, sound_system) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [0, name, manufacturer, production_year, mileage, class_type, image_name, purchase_price, sell_price, horsepower, window_tint, exhaust_power, sound_system])
+    flash[:notice] = "Car successfully created!"
+    return "/admin/cars"
 
-    #Om allt går bra då
-    if true == false
-        db = SQLite3::Database.new("db/database.db")
-        db.results_as_hash = true
-        db.execute("INSERT INTO cars (name, manufacturer, production_year, mileage, class_type, image_name, purchase_price, sell_price, horsepower, window_tint, exhaust_power, sound_system) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [name, manufacturer, production_year.to_i, mileage.to_i, class_type.to_i, image_name.to_s, purchase_price.to_i, sell_price.to_i, horsepower.to_i, window_tint.to_i, exhaust_power.to_i, sound_system.to_i])
-        flash[:notice] = "Car successfully created!"
+end 
 
-        #p params["image_name"][:filename]
-        
-        #p file.read
-        f = File.open("public/img/#{@filename}", 'wb') do |f|
-            f.write(@file.read)
-        end
-        #p "Filename: #{@filename}"
-        #p "File path: public/img/#{@filename}"
-        #p "File content: #{File.read("public/img/#{@filename}")}"
+##
+# Enforces cooldown logic for user actions.
+#
+# @param [Hash] session The session hash containing user data.
+# @return [Boolean] True if cooldown is enforced, otherwise false.
+def enforce_cooldown(last_time)
+    if last_time.nil?
+        #p "First time, you can do this action"
+        return true
+    end
+    current_time = Time.now.to_i
+    if current_time.to_f - last_time.to_f >= 0.001
+        #p "BAMSE"
+        return true
+    else
+        #p "Cooldown not passed, you can't do this action"
+        flash[:notice] = "Du är för snabb, vänta lite!"
+        return false
+    end
+end
+
+def check_if_owned(car_id)
+    db = SQLite3::Database.new("db/database.db")
+    db.results_as_hash = true
+
+    results = db.execute("SELECT * FROM cars WHERE id = ?", [car_id])
+    if results.empty?
+        return false
+    else
+        p results[0]["user_id"]
+        return results[0]["user_id"]
+    end
+end
